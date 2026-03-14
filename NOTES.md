@@ -1,3 +1,4 @@
+```
 ## Service Management Cheat Sheet
 If I need to edit the code for the case assembly:
 
@@ -19,9 +20,9 @@ sudo systemctl status jelly-oled.service
 
 # 6. See the last 50 lines of the script's output
 journalctl -u jelly-oled.service -n 50 --no-pager
+```
 
-
-
+```
 # What I did:
 ssh pi1@IP 	//ssh into the pi
 
@@ -41,9 +42,9 @@ sudo tailscale up --advertise-routes=<IP>	//Advertise the subnet
 
 
 Went to tailscale admin console and approved the subnet.
+```
 
-
-
+```
 MY HOUSE
 --------------------------------
 Jellyfin Server → 10.0.0.120
@@ -63,8 +64,8 @@ Raspberry Pi subnet router
       │
       ▼
 Your Jellyfin server
-
-
+```
+```
 Python install
 
 sudo apt install python3-venv -y	//install venv tools
@@ -93,7 +94,9 @@ pip install luma.oled
  sudo usermod -a -G i2c $USER
 
 python3 test_oled.py
+```
 
+```
 			TEST
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
@@ -121,10 +124,10 @@ try:
 
 except KeyboardInterrupt:
     print("\nCleaning up and shutting down.")
+```
 
-			
+```			
 nano jelly_monitor.py
-
 
 			FINAL CODE
 
@@ -248,8 +251,9 @@ try:
 
 except KeyboardInterrupt:
     GPIO.cleanup()
+```
 
-
+```
 Auto Start 
 sudo nano /etc/systemd/system/jelly-oled.service	//Create service file
 
@@ -270,8 +274,8 @@ User=pi1
 
 [Install]
 WantedBy=multi-user.target
-
-
+```
+```
 sudo systemctl daemon-reload
 sudo systemctl enable jelly-oled.service
 sudo systemctl start jelly-oled.service
@@ -279,3 +283,32 @@ sudo systemctl start jelly-oled.service
 Check if its working
 
 sudo systemctl status jelly-oled.service
+```
+
+```
+Troubleshooting & Common Pitfalls
+1. OLED Screen is Blank
+Check I2C Connectivity: Run i2cdetect -y 1. If you don't see 3c in the grid, a wire is loose.
+
+Permission Denied: If the script says it can't access the bus, ensure you ran sudo usermod -a -G i2c $USER and rebooted.
+
+Service Status: If it was working and stopped, run sudo systemctl status jelly-oled.service to see if the Python script crashed.
+
+2. "ModuleNotFoundError"
+Virtual Environment: This usually happens if the systemd service or your manual command isn't pointing to the venv.
+
+Fix: Always ensure you source ~/jellypi-env/bin/activate before running manually, or check that the ExecStart in your .service file points to the python inside the jellypi-env/bin/ folder.
+
+3. Fan Won't Spin
+Transistor Orientation: The 2N2222A is directional. If the flat side isn't facing the correct way, the "gate" won't open.
+
+Grounding: Ensure the Emitter (Left pin) is connected to a Ground pin on the Pi (like Pin 14), not just a random spot.
+
+Test Command: You can force the fan on for 5 seconds to test the circuit:
+python3 -c "import RPi.GPIO as G; G.setmode(G.BCM); G.setup(14, G.OUT); G.output(14, True); import time; time.sleep(5); G.cleanup()"
+
+4. Tailscale Subnet Issues
+Key Expiry: By default, Tailscale nodes expire every 6 months. Go to the Tailscale Admin Console, find your Pi, and select "Disable Key Expiry" so the router stays up forever.
+
+Routing: If remote devices can't see the Jellyfin server, re-verify that net.ipv4.ip_forward=1 is active by running sysctl net.ipv4.ip_forward.
+```
