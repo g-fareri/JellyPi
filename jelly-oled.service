@@ -1,0 +1,12 @@
+[Unit]
+Description=Jellyfin Router OLED and Fan Control
+After=network.target
+
+[Service]
+ExecStart=/home/pi1/jellypi-env/bin/python3 /home/pi1/jelly_monitor.py
+WorkingDirectory=/home/pi1
+Restart=always
+User=pi1
+
+[Install]
+WantedBy=multi-user.target
