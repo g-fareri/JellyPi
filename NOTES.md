@@ -17,6 +17,9 @@ sudo systemctl start jelly-oled.service
 # 5. Check if it's running okay
 sudo systemctl status jelly-oled.service
 
+# 6. See the last 50 lines of the script's output
+journalctl -u jelly-oled.service -n 50 --no-pager
+
 
 
 # What I did:
