@@ -20,6 +20,9 @@ sudo systemctl status jelly-oled.service
 
 # 6. See the last 50 lines of the script's output
 journalctl -u jelly-oled.service -n 50 --no-pager
+
+# 7. Check if the OLED is detected
+i2cdetect -y 1
 ```
 
 ```
