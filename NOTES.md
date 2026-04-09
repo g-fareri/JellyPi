@@ -147,14 +147,14 @@ from luma.core.render import canvas
 from PIL import Image, ImageDraw
 
 # --- CONFIGURATION ---
-TOUCH_PIN = 17
+BUTTON_PIN = 17        # can be touch sensor or regular button
 FAN_PIN = 14
 TEMP_THRESHOLD = 58.0
-SHUTDOWN_HOLD_TIME = 8 
+STATS_DISPLAY_TIME = 3  # seconds to show stats on tap
 
 # --- HARDWARE SETUP ---
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(TOUCH_PIN, GPIO.IN)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # adjust if using pull-up
 GPIO.setup(FAN_PIN, GPIO.OUT)
 serial = i2c(port=1, address=0x3C)
 device = ssd1306(serial)
@@ -166,7 +166,7 @@ draw_logo = ImageDraw.Draw(logo_img)
 draw_logo.ellipse([0, 0, logo_w-1, logo_h-1], outline="white")
 draw_logo.text((6, 5), "DVD", fill="white")
 
-# Variables
+# --- VARIABLES ---
 x, y, dx, dy = 10, 10, 2, 2
 corner_timer = 0
 corner_count = 0
@@ -177,7 +177,8 @@ def get_stats():
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-    except: ip = "No Network"
+    except: 
+        ip = "No Network"
     
     with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
         temp = float(f.read()) / 1000
@@ -191,45 +192,27 @@ try:
         ip, uptime, current_temp = get_stats()
         GPIO.output(FAN_PIN, current_temp > TEMP_THRESHOLD)
 
-         --- SENSOR LOGIC (Touch, Stats, or Shutdown) ---
-        if GPIO.input(TOUCH_PIN):
-            touch_start = time.time()
-            is_shutdown = False
+        # --- CHECK BUTTON TAP ---
+        if GPIO.input(BUTTON_PIN):
+            # Wait for button release (debounce)
+            while GPIO.input(BUTTON_PIN):
+                time.sleep(0.05)
             
-            # While the sensor is being held
-            while GPIO.input(TOUCH_PIN):
-                hold_duration = time.time() - touch_start
-                
+            # Show stats for STATS_DISPLAY_TIME seconds
+            start_time = time.time()
+            while time.time() - start_time < STATS_DISPLAY_TIME:
                 with canvas(device) as draw:
-                    if hold_duration < 3:
-                        # Normal Stats
-                        draw.text((0, 0),  f"IP: {ip}", fill="white")
-                        draw.text((0, 16), f"UP: {uptime} | CPU: {current_temp:.1f}C", fill="white")
-                        draw.text((0, 32), f"DSK: {psutil.disk_usage('/').percent}%", fill="white")
-                        draw.text((0, 48), "Hold for Shutdown...", fill="white")
-                    elif hold_duration < SHUTDOWN_HOLD_TIME:
-                        # Shutdown Warning
-                        countdown = int(SHUTDOWN_HOLD_TIME - hold_duration)
-                        draw.rectangle(device.bounding_box, outline="white", fill="black")
-                        draw.text((10, 20), f"SHUTTING DOWN IN {countdown}...", fill="white")
-                    else:
-                        # Trigger Shutdown
-                        draw.rectangle(device.bounding_box, outline="white", fill="white")
-                        draw.text((20, 25), "SYSTEM HALTING", fill="black")
-                        is_shutdown = True
-                        break
+                    draw.text((0, 0),  f"IP: {ip}", fill="white")
+                    draw.text((0, 16), f"UP: {uptime} | CPU: {current_temp:.1f}C", fill="white")
+                    draw.text((0, 32), f"DSK: {psutil.disk_usage('/').percent}%", fill="white")
+                    draw.text((0, 48), "Returning soon...", fill="white")
                 time.sleep(0.1)
 
-            if is_shutdown:
-                time.sleep(2)
-                os.system("sudo shutdown -h now")
-                break # Exit the script
-        
         # --- DVD BOUNCE MODE ---
         else:
-            hit_x, hit_y = False, False
             x += dx
             y += dy
+            hit_x, hit_y = False, False
 
             if x <= 0 or x + logo_w >= device.width:
                 dx = -dx
@@ -239,7 +222,7 @@ try:
                 hit_y = True
 
             if hit_x and hit_y:
-                corner_timer = 35 
+                corner_timer = 35
                 corner_count += 1
 
             with canvas(device) as draw:
