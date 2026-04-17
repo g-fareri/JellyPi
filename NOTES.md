@@ -135,7 +135,7 @@ nano jelly_monitor.py
 			FINAL CODE
 
 
-import os  
+import os
 import time
 import socket
 import psutil
@@ -150,12 +150,13 @@ from PIL import Image, ImageDraw
 BUTTON_PIN = 17        # can be touch sensor or regular button
 FAN_PIN = 14
 TEMP_THRESHOLD = 58.0
-STATS_DISPLAY_TIME = 3  # seconds to show stats on tap
+STATS_DISPLAY_TIME = 5  # seconds to show stats on tap
 
 # --- HARDWARE SETUP ---
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # adjust if using pull-up
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # adjust if using pull-up
 GPIO.setup(FAN_PIN, GPIO.OUT)
+
 serial = i2c(port=1, address=0x3C)
 device = ssd1306(serial)
 
@@ -163,7 +164,7 @@ device = ssd1306(serial)
 logo_w, logo_h = 35, 20
 logo_img = Image.new("1", (logo_w, logo_h))
 draw_logo = ImageDraw.Draw(logo_img)
-draw_logo.ellipse([0, 0, logo_w-1, logo_h-1], outline="white")
+draw_logo.ellipse([0, 0, logo_w - 1, logo_h - 1], outline="white")
 draw_logo.text((6, 5), "DVD", fill="white")
 
 # --- VARIABLES ---
@@ -171,21 +172,24 @@ x, y, dx, dy = 10, 10, 2, 2
 corner_timer = 0
 corner_count = 0
 
+
 def get_stats():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-    except: 
+    except:
         ip = "No Network"
-    
+
     with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
         temp = float(f.read()) / 1000
-    
+
     boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
     up = f"{(datetime.datetime.now() - boot_time).days}d"
+
     return ip, up, temp
+
 
 try:
     while True:
@@ -197,12 +201,12 @@ try:
             # Wait for button release (debounce)
             while GPIO.input(BUTTON_PIN):
                 time.sleep(0.05)
-            
+
             # Show stats for STATS_DISPLAY_TIME seconds
             start_time = time.time()
             while time.time() - start_time < STATS_DISPLAY_TIME:
                 with canvas(device) as draw:
-                    draw.text((0, 0),  f"IP: {ip}", fill="white")
+                    draw.text((0, 0), f"IP: {ip}", fill="white")
                     draw.text((0, 16), f"UP: {uptime} | CPU: {current_temp:.1f}C", fill="white")
                     draw.text((0, 32), f"DSK: {psutil.disk_usage('/').percent}%", fill="white")
                     draw.text((0, 48), "Returning soon...", fill="white")
@@ -217,6 +221,7 @@ try:
             if x <= 0 or x + logo_w >= device.width:
                 dx = -dx
                 hit_x = True
+
             if y <= 0 or y + logo_h >= device.height:
                 dy = -dy
                 hit_y = True
@@ -227,12 +232,13 @@ try:
 
             with canvas(device) as draw:
                 draw.bitmap((x, y), logo_img, fill="white")
+
                 if corner_timer > 0:
                     draw.rectangle([15, 15, 113, 45], outline="white", fill="black")
                     draw.text((25, 20), "CORNER HIT!", fill="white")
                     draw.text((45, 32), f"Total: {corner_count}", fill="white")
                     corner_timer -= 1
-            
+
             time.sleep(0.02)
 
 except KeyboardInterrupt:
