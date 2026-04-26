@@ -12,7 +12,6 @@ Real-time Monitoring: Tap the touch sensor to view IP address, system uptime, CP
 
 Active Cooling: 5V fan triggered automatically via transistor when CPU exceeds 58°C.
 
-Safe Shutdown: Hold the touch sensor for 8 seconds to trigger a graceful system halt, preventing SD card corruption.
 # Hardware
 Raspberry Pi 4 Model B (1GB+)
 
