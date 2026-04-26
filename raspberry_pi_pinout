@@ -1,7 +1,7 @@
 I made a fan controller using a transistor (2N2222A) that also acts as a ground bus.
 
 Circuit diagram:
-![image alt](https://github.com/g-fareri/JellyPi/blob/b177505e4b490816a4e82f0c599790af9a9ff070/JellyPi_Pinout.png)
+![image alt](https://github.com/g-fareri/JellyPi/blob/e87a0918a5931e8e0c6f35966b7d71ae08e9b28a/jelly_pi_pinout.png)
 
 Fan controller / Ground bus
 ![image alt](https://github.com/g-fareri/JellyPi/blob/6c5d2f1b544039751e9de1ffcec208580a191ea4/jelly_pi_fan_controller.png)
