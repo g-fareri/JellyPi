@@ -25,3 +25,5 @@ Cooling Fan - 5V DC (LD3007MS)
 Transistor - 2N2222A (NPN)
 
 Resistor - 330Ω
+
+![image alt](https://github.com/g-fareri/JellyPi/blob/5053ac5a5f54830f51e90367856e3f92caff5f6f/jelly_pi_done.png)
