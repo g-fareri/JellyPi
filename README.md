@@ -34,12 +34,12 @@ Jellyfin media server (remote host)
 Python (hardware control scripts)
 
 # Hardware
-Raspberry Pi 4 Model B
-0.96” I2C OLED Display (SSD1306)
-TTP223B Capacitive Touch Sensor
-5V DC Cooling Fan
-2N2222A NPN Transistor
-330Ω Resistor
+* Raspberry Pi 4 Model B
+* 0.96” I2C OLED Display (SSD1306)
+* TTP223B Capacitive Touch Sensor
+* 5V DC Cooling Fan
+* 2N2222A NPN Transistor
+* 330Ω Resistor
 
 # Evolution of Project
 Started as a Tailscale subnet router
