@@ -9,31 +9,31 @@ This project transforms a Raspberry Pi 4 into an intelligent network access poin
 This setup allows devices on the remote network to access the media server as if it were local.
 
 # Key Features
-#Network Gateway
+# Network Gateway
 Migrated from Tailscale subnet routing to NGINX reverse proxy architecture
 Securely forwards traffic to Jellyfin server via Tailscale IP
 Simplifies access to media services across networks
-#Remote Media Access
+# Remote Media Access
 Enables seamless Jellyfin streaming from a remote location
 Maintains private network isolation using Tailscale VPN
-#System Monitoring (Hardware-Based)
+# System Monitoring (Hardware-Based)
 OLED display shows system status and animations (“DVD bounce” screensaver)
 Touch sensor provides real-time system info:
 IP address
 CPU temperature
 System uptime
 Disk usage
-#Active Cooling System
+# Active Cooling System
 Temperature-controlled 5V fan system
 Automatically activates via transistor circuit when CPU exceeds 58°C
-#Technology Stack
+# Technology Stack
 Raspberry Pi OS (Linux)
 Tailscale VPN
 NGINX reverse proxy
 Jellyfin media server (remote host)
 Python (hardware control scripts)
 
-#Hardware
+# Hardware
 Raspberry Pi 4 Model B
 0.96” I2C OLED Display (SSD1306)
 TTP223B Capacitive Touch Sensor
@@ -41,7 +41,7 @@ TTP223B Capacitive Touch Sensor
 2N2222A NPN Transistor
 330Ω Resistor
 
-#Evolution of Project
+# Evolution of Project
 Started as a Tailscale subnet router
 Upgraded to NGINX reverse proxy gateway
 Added hardware monitoring + cooling system
