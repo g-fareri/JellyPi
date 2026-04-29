@@ -47,4 +47,4 @@ Upgraded to NGINX reverse proxy gateway
 Added hardware monitoring + cooling system
 Optimized for stability and real-world usability
 
-![image alt](https://github.com/g-fareri/JellyPi/blob/5053ac5a5f54830f51e90367856e3f92caff5f6f/jelly_pi_done.png)
+![image alt](https://github.com/g-fareri/JellyPi/blob/63b86c8e258d2503c485c9014d0719ae48b08022/jelly_pi_final.png)
