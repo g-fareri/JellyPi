@@ -304,3 +304,25 @@ Key Expiry: By default, Tailscale nodes expire every 6 months. Go to the Tailsca
 
 Routing: If remote devices can't see the Jellyfin server, re-verify that net.ipv4.ip_forward=1 is active by running sysctl net.ipv4.ip_forward.
 ```
+```
+Additional fix added 04/29/26
+sudo apt install nginx -y
+ sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo nano /etc/nginx/sites-available/jellyfin
+
+server {
+    listen 8096;
+
+    location / {
+        proxy_pass http://100.x.x.x:8096; // Filters to tailscale IP 
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+
+sudo ln -s /etc/nginx/sites-available/jellyfin /etc/nginx/sites-enabled/
+curl -I http://100.x.x.x:8096 // check if pi can find server
+```
